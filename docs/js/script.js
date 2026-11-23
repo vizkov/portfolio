@@ -181,30 +181,66 @@
     var live = df.projectId && df.agentId && !/^YOUR_/.test(df.projectId) && !/^YOUR_/.test(df.agentId);
 
     // Built-in panel
-    var log = el('div', { class: 'chat-log', id: 'chat-log' }, [el('div', { class: 'chat-msg chat-bot', text: 'Ask about Saksham’s work, or start with one of these:' })]);
+    var log = el('div', { class: 'chat-log', id: 'chat-log', role: 'log', 'aria-live': 'polite' }, [el('div', { class: 'chat-msg chat-bot', text: 'Ask about Saksham’s work, or start with one of these:' })]);
     var chips = el('div', { class: 'chat-chips' });
-    (CFG.starters || []).forEach(function (s) {
+    var chipFor = [];
+    function say(question, s) {
+      var asked = el('div', { class: 'chat-msg chat-user', text: question });
+      log.insertBefore(asked, chips);
+      var links = el('div', { class: 'chat-links' }, (s.sections || []).filter(function (x) { return document.getElementById(x[0]); }).map(function (x) {
+        return el('a', { href: '#' + x[0], class: 'chat-link', text: (/^F-\d+$/.test(x[0]) ? x[0] + ' · ' : '') + x[1] + ' →' });
+      }));
+      var ans = el('div', { class: 'chat-msg chat-bot' }, [s.a, links.childNodes.length ? el('div', { class: 'chat-links-label', text: 'Read more' }) : null, links.childNodes.length ? links : null]);
+      log.insertBefore(ans, chips);
+      log.scrollTop = asked.offsetTop - 14;
+    }
+    (CFG.starters || []).forEach(function (s, i) {
       var b = el('button', { type: 'button', class: 'chat-chip', text: s.q });
-      b.addEventListener('click', function () {
-        b.remove();
-        var links = el('div', { class: 'chat-links' }, (s.sections || []).filter(function (x) { return document.getElementById(x[0]); }).map(function (x) {
-          return el('a', { href: '#' + x[0], class: 'chat-link', text: (/^F-\d+$/.test(x[0]) ? x[0] + ' · ' : '') + x[1] + ' →' });
-        }));
-        var asked = el('div', { class: 'chat-msg chat-user', text: s.q });
-        log.insertBefore(asked, chips);
-        var ans = el('div', { class: 'chat-msg chat-bot' }, [s.a, links.childNodes.length ? el('div', { class: 'chat-links-label', text: 'Read more' }) : null, links.childNodes.length ? links : null]);
-        log.insertBefore(ans, chips);
-        log.scrollTop = asked.offsetTop - 14;
-      });
+      b.addEventListener('click', function () { b.remove(); say(s.q, s); });
+      chipFor[i] = b;
       chips.appendChild(b);
     });
+
+    // Offline keyword match: free text is scored against each starter's question,
+    // answer, section labels and optional `keywords`. No match -> point to email.
+    var STOP = /^(the|and|for|are|was|his|her|him|she|has|have|had|you|your|can|could|would|does|did|what|who|how|why|when|where|which|with|about|tell|any|that|this|there|their|from|into|than|then|him|saksham)$/;
+    function words(t) {
+      return String(t || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').split(' ').filter(function (w) { return w.length > 2 && !STOP.test(w); }).map(function (w) { return w.replace(/(ing|es|s)$/, ''); });
+    }
+    function best(text) {
+      var q = words(text), top = null, topScore = 0;
+      (CFG.starters || []).forEach(function (st, i) {
+        var kw = words((st.keywords || []).join(' ')), body = words([st.q, st.a].concat((st.sections || []).map(function (x) { return x[1]; })).join(' '));
+        var sc = 0;
+        q.forEach(function (w) { if (kw.indexOf(w) > -1) sc += 2; else if (body.indexOf(w) > -1) sc += 1; });
+        if (sc > topScore) { topScore = sc; top = i; }
+      });
+      return topScore >= 2 ? top : null;
+    }
+    function ask(text) {
+      text = text.trim().slice(0, 200);
+      if (!text) return;
+      var i = best(text);
+      if (i === null) {
+        log.insertBefore(el('div', { class: 'chat-msg chat-user', text: text }), chips);
+        var miss = el('div', { class: 'chat-msg chat-bot' }, ['I can’t answer that here yet. Try one of the topics below, or email ', el('a', { href: 'mailto:' + email, text: email }), '.']);
+        log.insertBefore(miss, chips);
+        log.scrollTop = miss.offsetTop - 14;
+        return;
+      }
+      if (chipFor[i].parentNode) chipFor[i].remove();
+      say(text, CFG.starters[i]);
+    }
     log.appendChild(chips);
     log.appendChild(el('div', { class: 'chat-note' }, ['Live answers aren’t connected yet. Anything else: ', el('a', { href: 'mailto:' + email, text: email })]));
 
+    var input = el('input', { type: 'text', maxlength: '200', autocomplete: 'off', 'aria-label': 'Your question', placeholder: 'Type a question' });
+    var form = el('form', { class: 'chat-input' }, [input, el('button', { type: 'submit', text: 'Send' })]);
+    form.addEventListener('submit', function (e) { e.preventDefault(); ask(input.value); input.value = ''; input.focus(); });
     var panel = el('div', { class: 'chat-panel', role: 'dialog', 'aria-label': df.title || 'Ask the Dispatch', id: 'chat-panel', hidden: '' }, [
       el('div', { class: 'chat-head' }, [el('div', { class: 'chat-title', text: df.title || 'Ask the Dispatch' }), el('div', { class: 'chat-sub', text: df.subtitle || '' })]),
       log,
-      el('div', { class: 'chat-input' }, [el('input', { type: 'text', disabled: '', 'aria-label': 'Your question', placeholder: 'Free-text questions coming soon' }), el('span', { text: 'Send' })])
+      form
     ]);
     var openIco = icon('M4 5h16v11H9l-5 4zM8 9h8M8 12h5', 24), closeIco = icon('M6 6l12 12M18 6L6 18', 22);
     closeIco.style.display = 'none';
@@ -214,9 +250,11 @@
       panel.hidden = !open; btn.setAttribute('aria-expanded', String(open));
       btn.setAttribute('aria-label', open ? 'Close the assistant' : 'Ask the Dispatch');
       openIco.style.display = open ? 'none' : ''; closeIco.style.display = open ? '' : 'none';
-      if (open) { var f = $('.chat-chip', panel); if (f) f.focus(); }
+      if (open) { var f = $('.chat-chip', panel) || input; f.focus(); }
     }
     btn.addEventListener('click', function () { setOpen(panel.hidden); });
+    // On phones the open panel covers the page: close it once a section link is followed
+    log.addEventListener('click', function (e) { if (e.target.closest && e.target.closest('.chat-link') && window.innerWidth <= 600) setOpen(false); });
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !panel.hidden) { setOpen(false); btn.focus(); } });
     document.body.appendChild(box);
 

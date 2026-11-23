@@ -30,21 +30,27 @@ window.PORTFOLIO_CONFIG = {
   starters: [
     { q: 'What did he find at the bank?',
       a: 'Four flaws chained into one exploit in a Fortune 100 bank’s payment settlement platform, demonstrated live to the Payments SVP and fixed before go-live.',
-      sections: [['F-01', 'Four chained flaws'], ['F-05', 'Automating exploit revalidation']] },
+      sections: [['F-01', 'Four chained flaws'], ['F-05', 'Automating exploit revalidation']],
+      keywords: ['bank','payment','settlement','finding','flaw','exploit','vulnerability','fortune'] },
     { q: 'How does he use AI in security work?',
       a: 'He built a workflow that checks an AI threat-modelling tool’s claims against the client’s own documents and code, cutting delivery from three weeks to one, and threat-modelled an airline’s GenAI platform.',
-      sections: [['F-02', 'Making AI threat models trustworthy'], ['F-03', 'A token that opened the AI gateway']] },
+      sections: [['F-02', 'Making AI threat models trustworthy'], ['F-03', 'A token that opened the AI gateway']],
+      keywords: ['ai','llm','genai','threat model','threat modelling','automation','workflow'] },
     { q: 'Has he secured AI agents?',
       a: 'Yes: three threat models for an airline’s GenAI platform, where he found that a token meant only for agent configuration also opened the central AI gateway.',
-      sections: [['F-03', 'A token that opened the AI gateway'], ['skills', 'AI / LLM security skills']] },
+      sections: [['F-03', 'A token that opened the AI gateway'], ['skills', 'AI / LLM security skills']],
+      keywords: ['agent','agentic','mcp','airline','gateway','token','secure'] },
     { q: 'Has he led a team?',
       a: 'Technical oversight for 8 assessors across 100+ assessments, with zero missed SLAs and zero escalations, plus mentoring junior assessors.',
-      sections: [['F-04', 'Turning assessors into owners'], ['F-08', 'Mentoring a stuck colleague']] },
+      sections: [['F-04', 'Turning assessors into owners'], ['F-08', 'Mentoring a stuck colleague']],
+      keywords: ['team','lead','leadership','manage','mentor','assessor','oversight'] },
     { q: 'Where does he work now?',
       a: 'Staff Consultant at UltraViolet Cyber, leading threat modelling, secure design review and architecture risk analysis for Bangalore delivery.',
-      sections: [['cv', 'The record']] },
+      sections: [['cv', 'The record']],
+      keywords: ['work','current','job','role','employer','company','ultraviolet','position','employed','working'] },
     { q: 'How do I get in touch?',
       a: 'Email chawla.saksham08@gmail.com, or find him on LinkedIn. He is open to relocation.',
-      sections: [['contact', 'Contact']] }
+      sections: [['contact', 'Contact']],
+      keywords: ['contact','email','reach','hire','linkedin','relocate','relocation','touch'] }
   ]
 };
