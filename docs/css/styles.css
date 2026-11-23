@@ -181,16 +181,16 @@ df-messenger{z-index:60;position:fixed;bottom:20px;right:20px;--df-messenger-fon
 .chat-input input { flex: 1; min-width: 0; border: 0; background: transparent; padding: 12px 14px; font: inherit; font-size: 14px; color: #151412; }
 .chat-input button { all: unset; box-sizing: border-box; cursor: pointer; color: #151412; padding: 12px 14px; font-family: 'Roboto Mono', monospace; letter-spacing: .14em; text-transform: uppercase; font-weight: 600; font-size: 10px; }
 .chat-input button:hover, .chat-input button:focus-visible { background: #151412; color: #fafaf8; }
-.chat-bubble { all: unset; box-sizing: border-box; cursor: pointer; width: 56px; height: 56px; background: #151412; color: #fafaf8; display: flex; align-items: center; justify-content: center; box-shadow: 0 12px 26px -12px #0009; }
-/* Speech bubble: three soft nudges after load (none once the chat has been opened this session), a tilt on hover; still for reduced motion */
-.chat-talk { transform-origin: 20% 85%; animation: talk-nudge 6s ease-in-out 2s 3; }
+.chat-bubble { all: unset; box-sizing: border-box; cursor: pointer; width: 56px; height: 56px; background: #fafaf8; color: #151412; border: 1px solid #151412; display: flex; align-items: center; justify-content: center; box-shadow: 0 12px 26px -12px #0009; }
+/* Speech bubble: a soft nudge every few seconds until the chat has been opened this session, a tilt on hover; still for reduced motion */
+.chat-talk { transform-origin: 20% 85%; animation: talk-nudge 6s ease-in-out .4s infinite; }
 .chat-bubble.chat-seen:not(:hover):not(:focus-visible) .chat-talk { animation: none; }
 .chat-bubble:hover .chat-talk, .chat-bubble:focus-visible .chat-talk { animation: talk-tilt .5s ease-in-out; }
-@keyframes talk-nudge { 0%, 72%, 100% { transform: rotate(0); } 78% { transform: rotate(-9deg); } 84% { transform: rotate(7deg); } 90% { transform: rotate(-4deg); } 96% { transform: rotate(2deg); } }
+@keyframes talk-nudge { 0% { transform: rotate(0); } 6% { transform: rotate(-9deg); } 12% { transform: rotate(7deg); } 18% { transform: rotate(-4deg); } 24% { transform: rotate(2deg); } 30%, 100% { transform: rotate(0); } }
 @keyframes talk-tilt { 0%, 100% { transform: rotate(0); } 30% { transform: rotate(-12deg) scale(1.08); } 65% { transform: rotate(6deg); } }
 @media (prefers-reduced-motion: reduce) { .chat-talk, .chat-bubble:hover .chat-talk, .chat-bubble:focus-visible .chat-talk { animation: none; } }
-.chat-bubble:hover { background: #0f766e; }
-.chat-bubble:focus-visible { outline: 2px solid #0f766e; outline-offset: 3px; }
+.chat-bubble:hover { background: #0f766e; color: #fafaf8; }
+.chat-bubble:focus-visible { background: #0f766e; color: #fafaf8; outline: 2px solid #0f766e; outline-offset: 3px; }
 .chat-ico { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
 @media print { .chat-fallback, df-messenger, #floatnav { display: none !important; } .reveal { opacity: 1 !important; transform: none !important; } }

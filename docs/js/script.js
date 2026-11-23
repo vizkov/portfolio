@@ -262,8 +262,10 @@
     var btn = el('button', { type: 'button', class: 'chat-bubble', 'aria-controls': 'chat-panel', 'aria-expanded': 'false', 'aria-label': 'Ask the Dispatch' }, [openIco, closeIco]);
     var box = el('div', { class: 'chat-fallback' }, [panel, btn]);
     // Stop the idle nudge for the rest of the session once the visitor has opened the chat
-    function seen() { btn.classList.add('chat-seen'); try { sessionStorage.setItem('chatSeen', '1'); } catch (e) {} }
-    try { if (sessionStorage.getItem('chatSeen')) btn.classList.add('chat-seen'); } catch (e) {}
+    // (Skipped on localhost so the nudge always plays while developing.)
+    var dev = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
+    function seen() { if (dev) return; btn.classList.add('chat-seen'); try { sessionStorage.setItem('chatSeen', '1'); } catch (e) {} }
+    try { if (!dev && sessionStorage.getItem('chatSeen')) btn.classList.add('chat-seen'); } catch (e) {}
     function setOpen(open) {
       if (open) seen();
       panel.hidden = !open; btn.setAttribute('aria-expanded', String(open));
