@@ -255,11 +255,17 @@
       log,
       form
     ]);
-    var openIco = icon('M4 5h16v11H9l-5 4zM8 9h8M8 12h5', 24), closeIco = icon('M6 6l12 12M18 6L6 18', 22);
+    var openIco = icon('M4 5h16v11H9l-5 4zM8 9h8M8 12h5', 24);
+    openIco.setAttribute('class', 'chat-ico chat-talk');
+    var closeIco = icon('M6 6l12 12M18 6L6 18', 22);
     closeIco.style.display = 'none';
     var btn = el('button', { type: 'button', class: 'chat-bubble', 'aria-controls': 'chat-panel', 'aria-expanded': 'false', 'aria-label': 'Ask the Dispatch' }, [openIco, closeIco]);
     var box = el('div', { class: 'chat-fallback' }, [panel, btn]);
+    // Stop the idle nudge for the rest of the session once the visitor has opened the chat
+    function seen() { btn.classList.add('chat-seen'); try { sessionStorage.setItem('chatSeen', '1'); } catch (e) {} }
+    try { if (sessionStorage.getItem('chatSeen')) btn.classList.add('chat-seen'); } catch (e) {}
     function setOpen(open) {
+      if (open) seen();
       panel.hidden = !open; btn.setAttribute('aria-expanded', String(open));
       btn.setAttribute('aria-label', open ? 'Close the assistant' : 'Ask the Dispatch');
       openIco.style.display = open ? 'none' : ''; closeIco.style.display = open ? '' : 'none';
