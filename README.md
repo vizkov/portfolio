@@ -3,23 +3,25 @@
 Static site: plain HTML, CSS and JavaScript, no build step and no frameworks.
 
 ```
-index.html                      all page content
-css/styles.css                  all styling
-js/config.js                    settings you edit (chat agent IDs, experience dates, starter questions)
-js/script.js                    page behaviour
-assets/portrait-westminster.jpg front-page photo
+docs/                           the published site (only this folder is served)
+  index.html                      all page content
+  css/styles.css                  all styling
+  js/config.js                    settings you edit (chat agent IDs, experience dates, starter questions)
+  js/script.js                    page behaviour
+  assets/portrait-westminster.jpg front-page photo
+README.md                       repo docs, deliberately outside docs/ so it is not served
 ```
 
 ## Run locally
-Any static server works, for example `python3 -m http.server 8080`, then open http://localhost:8080.
-Opening `index.html` directly from disk also works.
+Any static server works, for example `python3 -m http.server 8080 --directory docs`, then open http://localhost:8080.
+Opening `docs/index.html` directly from disk also works.
 
 ## Deploy (GitHub Pages)
-1. Commit these files to the root of `vizkov/portfolio` (or to a `docs/` folder).
-2. Repo **Settings → Pages**: deploy from branch `main`, folder `/ (root)` (or `/docs`).
+1. Push the repo to `vizkov/portfolio`. The site lives in `docs/`, so `README.md` and anything else at the root is not published.
+2. Repo **Settings → Pages**: deploy from branch `main`, folder `/docs`. Do not choose `/ (root)`, or `README.md` gets served.
 3. Optional custom domain: add it under Pages, and add the same domain to the Dialogflow Messenger allowlist.
 
-Netlify, Cloudflare Pages and Vercel work the same way: point them at this folder, with no build command.
+Netlify, Cloudflare Pages and Vercel work the same way: set the publish directory to `docs`, with no build command.
 
 ## What the JavaScript does
 | Feature | Where |
@@ -39,8 +41,8 @@ Netlify, Cloudflare Pages and Vercel work the same way: point them at this folde
 The live widget only works on the domains allowed in the agent's Messenger settings. See the GitHub issues for the rest of the integration work.
 
 ## Editing content
-- **Text:** edit `index.html` directly.
-- **Styling:** classes named `x1`, `x2`, … were generated from the design and live in `css/styles.css`. Hand-written rules (chat, reveal, print) are at the end of that file.
+- **Text:** edit `docs/index.html` directly.
+- **Styling:** classes named `x1`, `x2`, … were generated from the design and live in `docs/css/styles.css`. Hand-written rules (chat, reveal, print) are at the end of that file.
 - **Expandable sections:** these are marked with `data-js="…"` attributes. Keep those attributes when editing, or the toggles stop working.
 
 ## Security headers (recommended)
