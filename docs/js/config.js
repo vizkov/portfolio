@@ -51,6 +51,23 @@ window.PORTFOLIO_CONFIG = {
     { q: 'How do I get in touch?',
       a: 'Email chawla.saksham08@gmail.com, or find him on LinkedIn. He is open to relocation.',
       sections: [['contact', 'Contact']],
-      keywords: ['contact','email','reach','hire','linkedin','relocate','relocation','touch'] }
+      keywords: ['contact','email','reach','hire','linkedin','relocate','relocation','touch'] } ],
+
+  /* Extra topics for the free-text box only (no chip). Same shape as starters.
+     `keywords` is what makes a typed question match, so list the words people
+     would use. Add one when a section is missing a typed-question answer. */
+  topics: [
+    { q: 'What are his skills?', a: 'Application security, threat modelling, secure design review, penetration testing and AI / LLM security. The full list is in the skills section.',
+      sections: [['skills', 'Skills']], keywords: ['skill','tool','tech','stack','expertise','good','know','certification','certified'] },
+    { q: 'Where has he worked?', a: 'Employment history, with dates and highlights for each role.',
+      sections: [['cv', 'The record']], keywords: ['history','experience','resume','cv','career','previous','past','employer'] },
+    { q: 'Has he written anything?', a: 'He writes on Medium about security assessments, malware and building things. The posts are listed in the bylines.',
+      sections: [['bylines', 'Bylines']], keywords: ['write','written','blog','medium','article','post','publish','writing'] },
+    { q: 'What do others say about him?', a: 'Recommendations from people he has worked with are collected in the letters section.',
+      sections: [['kind-words', 'Letters']], keywords: ['recommend','recommendation','reference','testimonial','letter','feedback','say'] },
+    { q: 'What else does he do?', a: 'Projects, writing and volunteering outside the day job.',
+      sections: [['off-cv', 'Features']], keywords: ['project','volunteer','volunteering','open source','github','hobby','outside','side'] },
+    { q: 'Who is he?', a: 'A security engineer focused on application and AI security. The front page has the short version.',
+      sections: [['about', 'About me']], keywords: ['about','who','introduce','bio','background','person','yourself'] }
   ]
 };

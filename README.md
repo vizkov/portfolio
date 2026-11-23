@@ -35,6 +35,7 @@ Netlify, Cloudflare Pages and Vercel work the same way: set the publish director
 | Chat assistant | see below |
 
 ## Chat assistant ("Ask the Dispatch")
+- **Free-text box (fallback panel):** typed questions are matched offline in `script.js` (`best`). Matching scores the question against each entry's `q`, `a`, section labels and `keywords` in `config.js`. Entries come from `starters` (shown as chips) and `topics` (typed-only). `keywords` weigh double, so list the words a visitor would type. Greetings and `F-nn` ids are handled separately. No match shows the email address. When you add a section or change an answer, add or update its `keywords`, or typed questions will miss it.
 - **Placeholder IDs (`YOUR_…`) in `config.js`:** a built-in panel shows the starter questions from `config.starters`. Each answer links to one or more sections.
 - **Real Dialogflow CX `projectId` and `agentId`:** the page loads Google's Messenger widget and the built-in panel is removed once it registers. If Google's script fails to load, the built-in panel stays.
 

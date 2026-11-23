@@ -201,35 +201,48 @@
       chips.appendChild(b);
     });
 
-    // Offline keyword match: free text is scored against each starter's question,
-    // answer, section labels and optional `keywords`. No match -> point to email.
-    var STOP = /^(the|and|for|are|was|his|her|him|she|has|have|had|you|your|can|could|would|does|did|what|who|how|why|when|where|which|with|about|tell|any|that|this|there|their|from|into|than|then|him|saksham)$/;
-    function words(t) {
-      return String(t || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').split(' ').filter(function (w) { return w.length > 2 && !STOP.test(w); }).map(function (w) { return w.replace(/(ing|es|s)$/, ''); });
+    // Offline keyword match: free text is scored against each starter's (and each
+    // extra topic's) question, answer, section labels and `keywords`. A greeting or an
+    // F-nn case-study id is handled first. No match -> point to email.
+    var STOP = /^(the|and|for|are|was|his|her|him|she|has|have|had|you|your|can|could|would|does|did|what|who|how|why|when|where|which|with|about|tell|any|that|this|there|their|from|into|than|then|saksham)$/;
+    function words(t, keepStop) {
+      return String(t || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').split(' ').filter(function (w) { return (w.length > 2 || w === 'ai') && (keepStop || !STOP.test(w)); }).map(function (w) { return w.length > 3 ? w.replace(/(ing|es|s)$/, '') : w; });
     }
+    var pool = (CFG.starters || []).concat(CFG.topics || []);
     function best(text) {
-      var q = words(text), top = null, topScore = 0;
-      (CFG.starters || []).forEach(function (st, i) {
-        var kw = words((st.keywords || []).join(' ')), body = words([st.q, st.a].concat((st.sections || []).map(function (x) { return x[1]; })).join(' '));
+      var q = words(text), qAll = words(text, true), top = null, topScore = 0;
+      pool.forEach(function (st, i) {
+        var kw = words((st.keywords || []).join(' '), true), body = words([st.q, st.a].concat((st.sections || []).map(function (x) { return x[1]; })).join(' '));
         var sc = 0;
-        q.forEach(function (w) { if (kw.indexOf(w) > -1) sc += 2; else if (body.indexOf(w) > -1) sc += 1; });
+        qAll.forEach(function (w) { if (kw.indexOf(w) > -1) sc += 2; else if (q.indexOf(w) > -1 && body.indexOf(w) > -1) sc += 1; });
         if (sc > topScore) { topScore = sc; top = i; }
       });
       return topScore >= 2 ? top : null;
     }
+    function reply(question, kids) {
+      log.insertBefore(el('div', { class: 'chat-msg chat-user', text: question }), chips);
+      var m = el('div', { class: 'chat-msg chat-bot' }, kids);
+      log.insertBefore(m, chips);
+      log.scrollTop = m.offsetTop - 14;
+    }
     function ask(text) {
       text = text.trim().slice(0, 200);
       if (!text) return;
+      if (/^(hi|hello|hey|yo|good (morning|afternoon|evening))\b/i.test(text) && text.split(/\s+/).length <= 3) {
+        reply(text, ['Hello. Ask about Saksham’s work, or pick a topic below.']); return;
+      }
+      var fm = text.match(/\bf[-\s]?(\d{1,2})\b/i);
+      if (fm) {
+        var id = 'F-' + ('0' + fm[1]).slice(-2), node = document.getElementById(id), h = node && node.querySelector('h3');
+        if (h) { say(text, { a: 'That is a case study on the page.', sections: [[id, h.textContent]] }); return; }
+      }
       var i = best(text);
       if (i === null) {
-        log.insertBefore(el('div', { class: 'chat-msg chat-user', text: text }), chips);
-        var miss = el('div', { class: 'chat-msg chat-bot' }, ['I can’t answer that here yet. Try one of the topics below, or email ', el('a', { href: 'mailto:' + email, text: email }), '.']);
-        log.insertBefore(miss, chips);
-        log.scrollTop = miss.offsetTop - 14;
+        reply(text, ['I can’t answer that here yet. Try one of the topics below, or email ', el('a', { href: 'mailto:' + email, text: email }), '.']);
         return;
       }
-      if (chipFor[i].parentNode) chipFor[i].remove();
-      say(text, CFG.starters[i]);
+      if (chipFor[i] && chipFor[i].parentNode) chipFor[i].remove();
+      say(text, pool[i]);
     }
     log.appendChild(chips);
     log.appendChild(el('div', { class: 'chat-note' }, ['Live answers aren’t connected yet. Anything else: ', el('a', { href: 'mailto:' + email, text: email })]));
