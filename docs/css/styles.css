@@ -164,18 +164,25 @@ df-messenger{z-index:60;position:fixed;bottom:20px;right:20px;--df-messenger-fon
 .chat-title { font-size: 15px; letter-spacing: .2em; text-transform: uppercase; font-weight: 900; }
 .chat-sub, .chat-input button, .chat-note, .chat-link, .chat-links-label { font-family: 'Roboto Mono', monospace; letter-spacing: .14em; text-transform: uppercase; font-weight: 600; font-size: 10px; }
 .chat-sub { color: #bdbdb8; margin-top: 4px; }
-.chat-log { position: relative; padding: 14px; max-height: min(380px, 55vh); overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-.chat-msg { max-width: 90%; padding: 10px 12px; font-size: 14px; line-height: 1.45; }
-.chat-bot { align-self: flex-start; background: #efefec; }
-.chat-user { align-self: flex-end; background: #fff; border: 1px solid #151412; padding: 8px 12px; }
+.chat-log { position: relative; padding: 14px; max-height: min(380px, 55vh); overflow-y: auto; display: flex; flex-direction: column; }
+/* Q&A column: one left edge, no bubbles. A rule separates each exchange. */
+.chat-msg { font-size: 14px; line-height: 1.45; }
+.chat-user { font-weight: 700; border-top: 1px solid #151412; padding-top: 10px; margin-top: 12px; }
+.chat-log > .chat-user:first-child { border-top: 0; padding-top: 0; margin-top: 0; }
+.chat-user::before { content: ''; display: inline-block; width: 6px; height: 6px; margin-right: 9px; background: #0f766e; border-radius: 50%; vertical-align: .08em; }
+.chat-bot { margin-top: 6px; }
+.chat-bot a { color: #0f766e; }
 .chat-links-label { color: #5a5a57; margin-top: 10px; }
 .chat-links { display: flex; flex-direction: column; gap: 4px; margin-top: 4px; }
 .chat-link { color: #0f766e; text-decoration: none; }
 .chat-link:hover { color: #151412; }
-.chat-chips { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; margin-top: 2px; }
+.chat-chips { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; margin-top: 14px; padding-top: 10px; border-top: 1px solid #151412; }
+.chat-log > .chat-chips:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
+.chat-chips-label { font-family: 'Roboto Mono', monospace; letter-spacing: .14em; text-transform: uppercase; font-weight: 600; font-size: 10px; color: #5a5a57; }
+.chat-chips-label[hidden] { display: none; }
 .chat-chip { all: unset; box-sizing: border-box; cursor: pointer; max-width: 100%; border: 1px solid #151412; padding: 7px 11px; font-size: 13px; line-height: 1.3; font-weight: 700; color: #151412; background: #fafaf8; }
 .chat-chip:hover, .chat-chip:focus-visible { background: #151412; color: #fafaf8; }
-.chat-note { color: #5a5a57; line-height: 1.6; margin-top: 4px; }
+.chat-note { color: #5a5a57; line-height: 1.6; margin-top: 14px; }
 .chat-note a { color: #0f766e; text-transform: none; letter-spacing: 0; }
 .chat-input { display: flex; align-items: center; border-top: 1px solid #151412; }
 .chat-input input { flex: 1; min-width: 0; border: 0; background: transparent; padding: 12px 14px; font: inherit; font-size: 14px; color: #151412; }
@@ -197,3 +204,31 @@ df-messenger{z-index:60;position:fixed;bottom:20px;right:20px;--df-messenger-fon
 .chat-ico { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
 @media print { .chat-fallback, df-messenger, #floatnav { display: none !important; } .reveal { opacity: 1 !important; transform: none !important; } }
+
+/* Section intro paragraph: full column width */
+.lede { max-width: none; margin: 14px 0 22px; }
+
+/* Front-page photo: a time-lapse Elizabeth Tower clock and a jet crossing the sky.
+   Everything sits on the photo's own 870x1160 grid (viewBox), so it scales with the image. */
+.hero-photo { position: relative; }
+.hero-fx { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.clock-face { fill: #fafaf8; stroke: #151412; stroke-width: 2.5; }
+.clock-ticks { stroke: #151412; stroke-width: 1.6; fill: none; }
+.hand { stroke: #151412; stroke-linecap: round; }
+.hand-h { stroke-width: 3.6; } .hand-m { stroke-width: 2.4; }
+.clock-pin { fill: #0f766e; }
+/* Time-lapse: the clock runs absurdly fast so the motion is visible at this size (the minute hand laps every 6s). */
+.hand-m { transform: rotate(60deg); animation: clock-min 6s linear infinite; }
+.hand-h { transform: rotate(305deg); animation: clock-hr 72s linear infinite; }
+@keyframes clock-min { to { transform: rotate(420deg); } }
+@keyframes clock-hr { to { transform: rotate(665deg); } }
+/* Jets cross the whole frame from one edge to the other, one about every 30s, from alternating sides.
+   Each .plane flies along its own +x; the surrounding <g> in the SVG sets its start (just outside an edge),
+   heading and angle. The SVG mask hides them while they are behind the tower. 5 planes x 30s = a 150s cycle;
+   each crossing takes 12s (8% of the cycle). */
+.plane { opacity: 0; animation: plane-fly 150s linear infinite; }
+.plane-body { fill: #151412; }
+.plane.p1 { animation-delay: .5s; } .plane.p2 { animation-delay: 30.5s; } .plane.p3 { animation-delay: 60.5s; } .plane.p4 { animation-delay: 90.5s; } .plane.p5 { animation-delay: 120.5s; }
+@keyframes plane-fly { 0% { transform: translateX(0); opacity: 1; } 8% { transform: translateX(1190px); opacity: 1; } 8.01%, 100% { transform: translateX(1190px); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .plane { display: none; } .hand-m, .hand-h { animation: none; } }
+

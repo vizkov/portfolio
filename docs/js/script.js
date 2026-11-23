@@ -184,14 +184,23 @@
     var log = el('div', { class: 'chat-log', id: 'chat-log', role: 'log', 'aria-live': 'polite' }, []);
     var chips = el('div', { class: 'chat-chips' });
     var chipFor = [];
+    var chipsLabel = el('div', { class: 'chat-chips-label', text: 'Try asking' }), askedAny = false;
+    chips.appendChild(chipsLabel);
+    // Label reads 'Try asking' until the first question, then 'Ask another'; hidden once every chip is used
+    function syncChips() {
+      askedAny = true;
+      chipsLabel.textContent = 'Ask another';
+      chipsLabel.hidden = !chips.querySelector('.chat-chip');
+    }
     function say(question, s) {
       var asked = el('div', { class: 'chat-msg chat-user', text: question });
       log.insertBefore(asked, chips);
       var links = el('div', { class: 'chat-links' }, (s.sections || []).filter(function (x) { return document.getElementById(x[0]); }).map(function (x) {
-        return el('a', { href: '#' + x[0], class: 'chat-link', text: (/^F-\d+$/.test(x[0]) ? x[0] + ' · ' : '') + x[1] + ' →' });
+        return el('a', { href: '#' + x[0], class: 'chat-link', text: x[1] + ' →' });
       }));
       var ans = el('div', { class: 'chat-msg chat-bot' }, [s.a, links.childNodes.length ? el('div', { class: 'chat-links-label', text: 'Read more' }) : null, links.childNodes.length ? links : null]);
       log.insertBefore(ans, chips);
+      syncChips();
       log.scrollTop = asked.offsetTop - 14;
     }
     (CFG.starters || []).forEach(function (s, i) {
@@ -220,10 +229,11 @@
       return topScore >= 2 ? top : null;
     }
     function reply(question, kids) {
-      log.insertBefore(el('div', { class: 'chat-msg chat-user', text: question }), chips);
-      var m = el('div', { class: 'chat-msg chat-bot' }, kids);
-      log.insertBefore(m, chips);
-      log.scrollTop = m.offsetTop - 14;
+      var asked = el('div', { class: 'chat-msg chat-user', text: question });
+      log.insertBefore(asked, chips);
+      log.insertBefore(el('div', { class: 'chat-msg chat-bot' }, kids), chips);
+      syncChips();
+      log.scrollTop = asked.offsetTop - 14;
     }
     function ask(text) {
       text = text.trim().slice(0, 200);
