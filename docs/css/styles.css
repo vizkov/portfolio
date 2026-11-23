@@ -179,6 +179,9 @@ df-messenger{z-index:60;position:fixed;bottom:20px;right:20px;--df-messenger-fon
 .chat-note a { color: #0f766e; text-transform: none; letter-spacing: 0; }
 .chat-input { display: flex; align-items: center; border-top: 1px solid #151412; }
 .chat-input input { flex: 1; min-width: 0; border: 0; background: transparent; padding: 12px 14px; font: inherit; font-size: 14px; color: #151412; }
+/* Focus: a teal underline inside the box, not the browser's rounded ring (which butts against Send) */
+.chat-input input:focus { outline: none; }
+.chat-input input:focus-visible { outline: none; box-shadow: inset 0 -2px 0 #0f766e; }
 .chat-input button { all: unset; box-sizing: border-box; cursor: pointer; color: #151412; padding: 12px 14px; font-family: 'Roboto Mono', monospace; letter-spacing: .14em; text-transform: uppercase; font-weight: 600; font-size: 10px; }
 .chat-input button:hover, .chat-input button:focus-visible { background: #151412; color: #fafaf8; }
 .chat-bubble { all: unset; box-sizing: border-box; cursor: pointer; width: 56px; height: 56px; background: #fafaf8; color: #151412; border: 1px solid #151412; display: flex; align-items: center; justify-content: center; box-shadow: 0 12px 26px -12px #0009; }

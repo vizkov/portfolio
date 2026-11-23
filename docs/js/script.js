@@ -181,7 +181,7 @@
     var live = df.projectId && df.agentId && !/^YOUR_/.test(df.projectId) && !/^YOUR_/.test(df.agentId);
 
     // Built-in panel
-    var log = el('div', { class: 'chat-log', id: 'chat-log', role: 'log', 'aria-live': 'polite' }, [el('div', { class: 'chat-msg chat-bot', text: 'Ask about Saksham’s work, or start with one of these:' })]);
+    var log = el('div', { class: 'chat-log', id: 'chat-log', role: 'log', 'aria-live': 'polite' }, []);
     var chips = el('div', { class: 'chat-chips' });
     var chipFor = [];
     function say(question, s) {
@@ -247,7 +247,7 @@
     log.appendChild(chips);
     log.appendChild(el('div', { class: 'chat-note' }, ['Live answers aren’t connected yet. Anything else: ', el('a', { href: 'mailto:' + email, text: email })]));
 
-    var input = el('input', { type: 'text', maxlength: '200', autocomplete: 'off', 'aria-label': 'Your question', placeholder: 'Type a question' });
+    var input = el('input', { type: 'text', maxlength: '200', autocomplete: 'off', 'aria-label': 'Your question', placeholder: 'Ask about his work, or pick one' });
     var form = el('form', { class: 'chat-input' }, [input, el('button', { type: 'submit', text: 'Send' })]);
     form.addEventListener('submit', function (e) { e.preventDefault(); ask(input.value); input.value = ''; input.focus(); });
     var panel = el('div', { class: 'chat-panel', role: 'dialog', 'aria-label': df.title || 'Ask the Dispatch', id: 'chat-panel', hidden: '' }, [
